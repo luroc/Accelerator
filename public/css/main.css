@@ -706,6 +706,37 @@ hr {
     height:100vh !important;
 }
 
+/* ### Whiteboard ####*/
+
+#whiteboardScreen {
+	width: 100%; 
+	padding-left: 10px;
+	padding-right: 10px;	
+}
+
+#whiteboard {
+	min-height: 98vh; 
+	width: 100%; 
+	border-radius: 3px; 
+	background: white; 
+	position: relative; 
+	overflow: hidden;
+}
+
+#whiteboardContainer {
+	position:relative; 
+	height: 98vh; 
+	width: 100%;
+}
+
+#whiteboardToolbarContainer {
+	position: absolute; 
+	left: 45px; 
+	top: 10px; 
+	border-radius: 3px; 
+	overflow: hidden;
+}
+  
 #whiteboardSlider {
     -webkit-appearance: none;
     width: 100%;
@@ -1033,3 +1064,7 @@ hr {
     padding:5px;
     box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
 }
+
+/* ### Utility CLasses ####*/
+.margin0		{margin: 0px 0px;}
+.bgGray			{background: gray;}
