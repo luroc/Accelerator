@@ -8,7 +8,7 @@
   }
 
 body {
-    background-image: url(../images/backgroundimage.png);
+    background: url(../images/gdm-noise-texture.png), url(../images/test3.png) 17vw;
     overflow: hidden;
     height: 100vh;
 }
