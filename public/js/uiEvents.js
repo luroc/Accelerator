@@ -34,11 +34,7 @@ $(function () { //Document ready
 		} else {
 			setUserAttr(username, password);
 			showPage("#accessMicPage");
-
-			var constraints = { echoCancellation: { ideal : true } };
-			if (localStorage.getItem("prevAudioInputDevice")) {
-				constraints["deviceId"] = { ideal: localStorage.getItem("prevAudioInputDevice") }
-			}
+			var constraints = localStorage.getItem("prevAudioInputDevice") ? { deviceId: { exact: localStorage.getItem("prevAudioInputDevice") } } : true;
 			navigator.getUserMedia({ audio: constraints, video: false }, async function (stream) {
 				localAudioStream = stream;
 				continueToRoomPage();
@@ -158,7 +154,7 @@ $(function () { //Document ready
 		var oneVideoInput = false;
 		var audioInputProgressBar = $('<progress value="0" max="100" style="width: 300px;">0</progress>');
 
-		var constraints = prevAudioInputDevice ? { deviceId: { ideal: prevAudioInputDevice } } : true;
+		var constraints = prevAudioInputDevice ? { deviceId: { exact: prevAudioInputDevice } } : true;
 		navigator.getUserMedia({ audio: constraints, video: false }, async function (stream) {
 			var audioOutputSelect = $('<select style="width: 300px;"></select>');
 			var audioInputSelect = $('<select style="width: 300px;"></select>');
@@ -240,7 +236,7 @@ $(function () { //Document ready
 
 			audioInputBtn.click(function () {
 				$("#mediaSetupOutput").empty();
-				var constraints = { deviceId: { ideal: audioInputSelect.val() } };
+				var constraints = { deviceId: { exact: audioInputSelect.val() } };
 				navigator.getUserMedia({ audio: constraints, video: false }, async function (stream) {
 					testAudioStream = stream;
 					const audioContext = new AudioContext();
@@ -307,7 +303,7 @@ $(function () { //Document ready
 			var webcamTestStopBtn = $('<button class="btn btn-primary" style="padding:5px; display:none;"><i class="fa fa-stop-circle-o" aria-hidden="true"></i> Stop</button>');
 			webcamTestStartBtn.click(function () {
 				$("#mediaSetupOutput").empty();
-				var constraints = { deviceId: { ideal: videoInputSelect.val() } };
+				var constraints = { deviceId: { exact: videoInputSelect.val() } };
 				webcamTestStartBtn.hide();
 				navigator.getUserMedia({ audio: false, video: constraints }, async function (stream) {
 					testVideoStream = stream;
@@ -371,7 +367,7 @@ $(function () { //Document ready
 				prevAudioInputDevice = audioInputSelect.val();
 				localStorage.setItem("prevAudioInputDevice", audioInputSelect.val())
 
-				var constraints = { deviceId: { ideal: audioInputSelect.val() } };
+				var constraints = { deviceId: { exact: audioInputSelect.val() } };
 				navigator.getUserMedia({ audio: constraints, video: false }, async function (stream) {
 					localAudioStream = stream;
 				});
@@ -658,7 +654,7 @@ $(function () { //Document ready
 
 				})();
 			} else {
-				var constraints = prevVideoInputDevice ? { deviceId: { ideal: prevVideoInputDevice } } : {};
+				var constraints = prevVideoInputDevice ? { deviceId: { exact: prevVideoInputDevice } } : {};
 				constraints["mandatory"] = newMand;
 				navigator.getUserMedia({ audio: false, video: constraints }, function (stream) {
 					stream["streamAttributes"] = { "screenshare": true };
@@ -1004,15 +1000,14 @@ $(function () { //Document ready
 		var files = FileInput[0].files;
 		var praesiType = $(".praesiType:checked").val();
 		var praesiName = cleanString($("#praesiName").val());
+		if (praesiName == "" && files.length == 1) {
+			cleanString($("#praesiName").val($("#filePlaceholder").val()));
+		}
+
 		var formData = new FormData(this);
 		formData.append("userId", ownSocketId);
 		formData.append("uploadType", "praesi");
 		formData.append("room", roomImIn["roomName"]);
-
-		if (praesiName == "") {
-			$("#praesiUpInfo").text("Name of presentation is missing!");
-			return;
-		}
 
 		if (files.length <= 0 || $("#filePlaceholder").val() == "") {
 			$("#praesiUpInfo").text("No file selected!");
@@ -1111,8 +1106,6 @@ $(function () { //Document ready
 		$('#userPicUploadModal').modal('hide');
 	});
 
-
-
 	//Manage Toolbar
 	$(".toolbar-icon").click(function () {
 		var status = "";
@@ -1139,8 +1132,6 @@ $(function () { //Document ready
 				status = "not-coffee";
 			} else if ($(this).find(".applause").length > 0) {
 				status = "not-applause";
-			} else if ($(this).find(".fa-video-camera").length > 0) {
-				stopLocalVideo();
 			}
 		} else {
 			$(this).addClass("alert-danger");
@@ -1170,11 +1161,6 @@ $(function () { //Document ready
 				status = "coffee";
 			} else if ($(this).find(".applause").length > 0) {
 				status = "applause";
-			} else if ($(this).find(".fa-video-camera").length > 0) {
-				if ($(this).hasClass("alert-error")) {
-					$(this).removeClass("alert-error");
-				}
-				startLocalVideo();
 			}
 		}
 		if (status != "")
